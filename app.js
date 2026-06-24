@@ -14,8 +14,13 @@ const AudioSystem = {
   },
 
   play(type) {
-    if (!this.enabled || !this.ctx) return;
+    if (!this.enabled) return;
+    if (!this.ctx) this.init();
+    if (!this.ctx) return;
     try {
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.connect(gain);
