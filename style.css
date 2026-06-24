@@ -866,3 +866,14 @@ h1 {
     right: 12px;
   }
 }
+
+/* Empty state card styling */
+.empty-state-card {
+  animation: fadeInScreen 0.35s ease forwards;
+  transition: all 0.3s ease;
+}
+
+.empty-state-card:hover {
+  border-color: var(--card-hover-border);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.08);
+}

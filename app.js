@@ -111,8 +111,29 @@ let state = {
   elapsedSeconds: 0
 };
 
+// ─── Selection Flow State & Mapping ───
+let selectionState = {
+  year: null,
+  semester: null,
+  subject: null
+};
+
+const ACADEMIC_MAP = {
+  "1st Year": ["1st Semester", "2nd Semester"],
+  "2nd Year": ["3rd Semester", "4th Semester"],
+  "3rd Year": ["5th Semester", "6th Semester"],
+  "4th Year": ["7th Semester", "8th Semester"]
+};
+
+const SEMESTER_SUBJECTS = {
+  "4th Semester": ["AI", "Mathematics", "DAA", "Optimization Techniques", "EVS", "Biology"]
+};
+
+
 // ─── DOM Elements ───
 const welcomeScreen = document.getElementById('welcome-screen');
+const welcomeTitle = document.getElementById('welcome-title');
+const welcomeSubtitle = document.getElementById('welcome-subtitle');
 const quizScreen = document.getElementById('quiz-screen');
 const resultsScreen = document.getElementById('results-screen');
 const btnBack = document.getElementById('btn-back');
@@ -157,57 +178,202 @@ const btnRestart = document.getElementById('btn-restart');
 // ─── Initialize App ───
 document.addEventListener('DOMContentLoaded', () => {
   AudioSystem.init();
-  renderCategories();
+  renderWelcomeScreen();
   setupEventListeners();
 });
 
-// ─── Render categories on welcome screen ───
-function renderCategories() {
-  const categories = [...new Set(QUIZ_DATA.map(q => q.group))];
-
+// ─── Render Welcome Screen (Selection Flow) ───
+function renderWelcomeScreen() {
   categoryList.innerHTML = '';
+  
+  // Show back button on the welcome screen only if the user has navigated past the root Year selection.
+  if (selectionState.year !== null) {
+    btnBack.style.display = 'flex';
+  } else {
+    btnBack.style.display = 'none';
+  }
 
-  // 1. "Mixed All Topics" option
-  const mixedBtn = document.createElement('button');
-  mixedBtn.className = 'category-btn mixed';
-  mixedBtn.innerHTML = `
-    <span><span class="icon">✨</span> Mixed All Topics (${QUIZ_DATA.length} Questions)</span>
-    <span class="arrow">→</span>
-  `;
-  mixedBtn.addEventListener('click', () => startQuiz(null));
-  categoryList.appendChild(mixedBtn);
+  if (selectionState.year === null) {
+    // 1. Render Year Selection
+    welcomeTitle.textContent = "AI Quiz Challenge";
+    welcomeSubtitle.textContent = "Select your academic year to get started";
 
-  // 2. Each category
-  const emojiMap = [
-    [/Agent/, '🤖'],
-    [/Search/, '⚡'],
-    [/Fuzzy/, '☁️'],
-    [/Logic/, '🧩'],
-    [/Expert|Machine/, '🧠'],
-    [/Natural|NLP/, '🗣️']
-  ];
+    const years = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
+    const icons = ["🌱", "🚀", "⚡", "🎓"];
 
-  categories.forEach(cat => {
-    const catQuestions = QUIZ_DATA.filter(q => q.group === cat);
-    const btn = document.createElement('button');
-    btn.className = 'category-btn';
+    years.forEach((yr, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'category-btn';
+      btn.innerHTML = `
+        <span><span class="icon">${icons[idx]}</span> ${yr}</span>
+        <span class="arrow">→</span>
+      `;
+      btn.addEventListener('click', () => {
+        selectionState.year = yr;
+        renderWelcomeScreen();
+      });
+      categoryList.appendChild(btn);
+    });
+  } 
+  else if (selectionState.semester === null) {
+    // 2. Render Semester Selection
+    welcomeTitle.textContent = selectionState.year;
+    welcomeSubtitle.textContent = "Select semester to continue";
 
-    let emoji = '📚';
-    for (const [regex, icon] of emojiMap) {
-      if (regex.test(cat)) { emoji = icon; break; }
+    const sems = ACADEMIC_MAP[selectionState.year] || [];
+    sems.forEach(sem => {
+      const btn = document.createElement('button');
+      btn.className = 'category-btn';
+      btn.innerHTML = `
+        <span><span class="icon">📅</span> ${sem}</span>
+        <span class="arrow">→</span>
+      `;
+      btn.addEventListener('click', () => {
+        selectionState.semester = sem;
+        renderWelcomeScreen();
+      });
+      categoryList.appendChild(btn);
+    });
+  } 
+  else if (selectionState.subject === null) {
+    // 3. Render Subject Selection
+    welcomeTitle.textContent = selectionState.semester;
+    welcomeSubtitle.textContent = `Subjects available for ${selectionState.semester}`;
+
+    const subjects = SEMESTER_SUBJECTS[selectionState.semester] || [];
+    
+    if (subjects.length === 0) {
+      // Semester is implemented but has no subjects yet
+      renderEmptyState(selectionState.semester, `Subjects for ${selectionState.semester} will be available soon.`);
+      return;
     }
 
-    const best = Storage.getBestScore(cat);
-    const bestLabel = best ? ` · Best: ${best.accuracy}%` : '';
+    subjects.forEach(sub => {
+      const btn = document.createElement('button');
+      btn.className = 'category-btn';
+      
+      let icon = "📘";
+      if (sub === "AI") icon = "🧠";
+      else if (sub === "Mathematics") icon = "📐";
+      else if (sub === "DAA") icon = "💻";
+      else if (sub === "Optimization Techniques") icon = "📈";
+      else if (sub === "EVS") icon = "🍀";
+      else if (sub === "Biology") icon = "🧬";
 
-    btn.innerHTML = `
-      <span><span class="icon">${emoji}</span> ${cat} (${catQuestions.length}${bestLabel})</span>
-      <span class="arrow">→</span>
-    `;
-    btn.addEventListener('click', () => startQuiz(cat));
-    categoryList.appendChild(btn);
+      btn.innerHTML = `
+        <span><span class="icon">${icon}</span> ${sub}</span>
+        <span class="arrow">→</span>
+      `;
+      btn.addEventListener('click', () => {
+        selectionState.subject = sub;
+        renderWelcomeScreen();
+      });
+      categoryList.appendChild(btn);
+    });
+  } 
+  else {
+    // 4. Topic Selection (AI subject is fully functional; others show Coming Soon)
+    if (selectionState.subject === "AI") {
+      welcomeTitle.textContent = "AI Topics";
+      welcomeSubtitle.textContent = "Select a topic to start the Artificial Intelligence quiz";
+
+      const categories = [...new Set(QUIZ_DATA.map(q => q.group))];
+
+      // "Mixed All Topics" option
+      const mixedBtn = document.createElement('button');
+      mixedBtn.className = 'category-btn mixed';
+      mixedBtn.innerHTML = `
+        <span><span class="icon">✨</span> Mixed All Topics (${QUIZ_DATA.length} Questions)</span>
+        <span class="arrow">→</span>
+      `;
+      mixedBtn.addEventListener('click', () => startQuiz(null));
+      categoryList.appendChild(mixedBtn);
+
+      // Render each specific topic
+      const emojiMap = [
+        [/Agent/, '🤖'],
+        [/Search/, '⚡'],
+        [/Fuzzy/, '☁️'],
+        [/Logic/, '🧩'],
+        [/Expert|Machine/, '🧠'],
+        [/Natural|NLP/, '🗣️']
+      ];
+
+      categories.forEach(cat => {
+        const catQuestions = QUIZ_DATA.filter(q => q.group === cat);
+        const btn = document.createElement('button');
+        btn.className = 'category-btn';
+
+        let emoji = '📚';
+        for (const [regex, icon] of emojiMap) {
+          if (regex.test(cat)) { emoji = icon; break; }
+        }
+
+        const best = Storage.getBestScore(cat);
+        const bestLabel = best ? ` · Best: ${best.accuracy}%` : '';
+
+        btn.innerHTML = `
+          <span><span class="icon">${emoji}</span> ${cat} (${catQuestions.length}${bestLabel})</span>
+          <span class="arrow">→</span>
+        `;
+        btn.addEventListener('click', () => startQuiz(cat));
+        categoryList.appendChild(btn);
+      });
+    } else {
+      // Non-AI subjects are coming soon
+      renderEmptyState(selectionState.subject, `Questions for ${selectionState.subject} are currently under development. Check back soon!`);
+    }
+  }
+}
+
+// ─── Render Premium Empty State for Coming Soon Subjects/Semesters ───
+function renderEmptyState(title, message) {
+  welcomeTitle.textContent = title;
+  welcomeSubtitle.textContent = "";
+
+  const container = document.createElement('div');
+  container.className = 'empty-state-card';
+  container.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    text-align: center;
+    margin-top: 10px;
+  `;
+
+  container.innerHTML = `
+    <div style="font-size: 3.5rem; margin-bottom: 20px; animation: floatOrb1 4s infinite alternate ease-in-out;">⏳</div>
+    <h3 style="font-size: 1.4rem; margin-bottom: 12px; font-family: 'Outfit', sans-serif;">Coming Soon</h3>
+    <p style="color: var(--text-secondary); max-width: 320px; margin-bottom: 25px; line-height: 1.6; font-size: 0.95rem;">${message}</p>
+    <button class="btn btn-secondary" id="btn-empty-back" style="padding: 10px 20px; font-size: 0.9rem;">
+      ← Go Back
+    </button>
+  `;
+
+  categoryList.appendChild(container);
+
+  document.getElementById('btn-empty-back').addEventListener('click', () => {
+    goBackOneLevel();
   });
 }
+
+// ─── Back Navigation Level Logic ───
+function goBackOneLevel() {
+  if (selectionState.subject !== null) {
+    selectionState.subject = null;
+  } else if (selectionState.semester !== null) {
+    selectionState.semester = null;
+  } else if (selectionState.year !== null) {
+    selectionState.year = null;
+  }
+  renderWelcomeScreen();
+}
+
 
 // ─── Event Listeners ───
 function setupEventListeners() {
@@ -217,8 +383,12 @@ function setupEventListeners() {
   btnSkip.addEventListener('click', skipQuestion);
   btnRestart.addEventListener('click', resetToWelcome);
   btnBack.addEventListener('click', () => {
-    if (confirm('Are you sure you want to exit and return to the main menu? Progress will be lost.')) {
-      resetToWelcome();
+    if (quizScreen.classList.contains('active')) {
+      if (confirm('Are you sure you want to exit and return to the main menu? Progress will be lost.')) {
+        resetToWelcome();
+      }
+    } else {
+      goBackOneLevel();
     }
   });
 
@@ -628,7 +798,7 @@ function resetToWelcome() {
   btnBack.style.display = 'none';
 
   setTimeout(() => {
-    renderCategories(); // re-render to show updated best scores
+    renderWelcomeScreen(); // re-render to show updated best scores
     welcomeScreen.classList.add('active');
   }, 150);
 }
