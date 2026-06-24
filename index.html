@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI & Intelligent Agents Quiz Challenge</title>
+  <meta name="description" content="An interactive quiz application for Artificial Intelligence concepts, search algorithms, logic, fuzzy reasoning, expert systems, and NLP.">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Watermark background (matching user preference) -->
+  <div class="watermark">RR | AI QUIZ</div>
+
+  <div class="app-container" id="app-container">
+    
+    <!-- BACK BUTTON (Visible only when in quiz or results screen) -->
+    <button id="btn-back" class="btn-back" style="display: none;">
+      <span>←</span> Back to Menu
+    </button>
+
+    <!-- 1. WELCOME / CATEGORY SELECTION SCREEN -->
+    <section id="welcome-screen" class="screen active">
+      <h1>AI Quiz Challenge</h1>
+      <p class="subtitle">Select a topic below to test your Artificial Intelligence knowledge</p>
+      
+      <nav class="category-list" id="category-list">
+        <!-- Categories will be rendered here dynamically, plus a mixed option -->
+      </nav>
+    </section>
+
+    <!-- 2. QUIZ PLAYING SCREEN -->
+    <section id="quiz-screen" class="screen">
+      <header class="quiz-header">
+        <span id="category-badge" class="category-badge">Category</span>
+        <div class="stats-container">
+          <div id="streak-counter" class="streak-counter" style="display: none;">
+            🔥 <span id="streak-val">0</span> Streak
+          </div>
+          <span id="question-progress" class="question-progress">Q: 0/0</span>
+        </div>
+      </header>
+
+      <!-- Progress bar -->
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="question-card" id="question-card">
+        <h2 id="question-text" class="question-text">Question goes here...</h2>
+        
+        <!-- Open Answer Text Box -->
+        <div class="open-answer-container" id="open-answer-container">
+          <input type="text" id="text-answer-input" class="text-input" placeholder="Type your answer here..." autocomplete="off">
+          
+          <div class="action-buttons">
+            <button id="btn-check-answer" class="btn btn-primary">Check Answer</button>
+            <button id="btn-toggle-hint" class="btn btn-hint">
+              💡 Get Multiple Choice Hint
+            </button>
+          </div>
+        </div>
+
+        <!-- Hint Multiple Choice Area (Hidden by default, shown on tap) -->
+        <div id="hint-mc-container" class="hint-mc-container">
+          <h3 class="hint-title">
+            <span class="glow">💡 Hint:</span> Choose the correct option
+          </h3>
+          <div id="mc-options-list" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Options A to E will be loaded here dynamically -->
+          </div>
+        </div>
+
+        <!-- Answer feedback details -->
+        <div id="feedback-panel" class="feedback-panel">
+          <h3 id="feedback-title" class="feedback-title">Correct!</h3>
+          <p id="feedback-text" class="feedback-text">Details about the answer...</p>
+        </div>
+      </div>
+
+      <!-- Footer navigation -->
+      <footer class="quiz-nav">
+        <button id="btn-next" class="btn btn-primary" style="display: none;">
+          Next Question ➔
+        </button>
+      </footer>
+    </section>
+
+    <!-- 3. RESULTS SUMMARY SCREEN -->
+    <section id="results-screen" class="screen">
+      <header class="results-header">
+        <h1>Quiz Completed!</h1>
+        <p class="subtitle" id="results-greeting">Great effort! Here is your performance breakdown.</p>
+      </header>
+
+      <!-- Circular visual progress chart -->
+      <div class="circular-progress-container">
+        <svg class="circular-progress" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="gradientCircle" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7c3aed" />
+              <stop offset="100%" stop-color="#3b82f6" />
+            </linearGradient>
+          </defs>
+          <circle class="bg-circle" cx="80" cy="80" r="70"></circle>
+          <circle id="fg-circle" class="fg-circle" cx="80" cy="80" r="70"></circle>
+        </svg>
+        <div class="percentage-text">
+          <span id="accuracy-percent">0%</span>
+          <span>Accuracy</span>
+        </div>
+      </div>
+
+      <!-- Performance Stats -->
+      <div class="results-stats">
+        <div class="result-stat-card">
+          <div class="result-stat-val score-val" id="results-score-val">0/0</div>
+          <div class="result-stat-lbl">Final Score</div>
+        </div>
+        <div class="result-stat-card">
+          <div class="result-stat-val streak-val" id="results-streak-val">0</div>
+          <div class="result-stat-lbl">Max Streak</div>
+        </div>
+      </div>
+
+      <!-- Review panel for incorrect questions -->
+      <div id="review-section" class="review-section" style="display: none;">
+        <h3 class="review-title">Questions to Review</h3>
+        <div class="review-list" id="review-list">
+          <!-- List of failed questions and correct answers -->
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <footer class="results-actions">
+        <button id="btn-restart" class="btn btn-primary" style="width: 100%;">
+          Play Again ↺
+        </button>
+      </footer>
+    </section>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
