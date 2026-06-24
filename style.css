@@ -127,7 +127,6 @@ h1 {
 .screen {
   display: none;
   opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
   transform: translateY(10px);
 }
 
@@ -135,6 +134,12 @@ h1 {
   display: block;
   opacity: 1;
   transform: translateY(0);
+  animation: fadeInScreen 0.35s ease forwards;
+}
+
+@keyframes fadeInScreen {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- WELCOME SCREEN --- */
@@ -305,9 +310,22 @@ h1 {
   box-shadow: 0 0 12px rgba(124, 58, 237, 0.15);
 }
 
+.text-input.correct {
+  border-color: var(--success) !important;
+  background: rgba(16, 185, 129, 0.06) !important;
+  box-shadow: 0 0 12px var(--success-glow);
+}
+
+.text-input.incorrect {
+  border-color: var(--error) !important;
+  background: rgba(239, 68, 68, 0.06) !important;
+  box-shadow: 0 0 12px var(--error-glow);
+}
+
 .action-buttons {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -524,6 +542,77 @@ h1 {
   margin-top: 25px;
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-skip {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--card-border);
+  flex: none;
+}
+
+.btn-skip:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Timer */
+.timer-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+
+.timer-container.warning {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.25);
+  background: rgba(251, 191, 36, 0.06);
+  animation: pulseTimer 1s infinite;
+}
+
+@keyframes pulseTimer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Sound Toggle */
+.btn-sound {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.btn-sound:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* Disabled buttons */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .card-shake {
@@ -600,6 +689,16 @@ h1 {
   margin-bottom: 30px;
 }
 
+.results-stats.four-col {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media(max-width: 640px) {
+  .results-stats.four-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .result-stat-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--card-border);
@@ -616,6 +715,8 @@ h1 {
 
 .result-stat-val.score-val { color: var(--secondary); }
 .result-stat-val.streak-val { color: #fb923c; }
+.result-stat-val.time-val { color: #a78bfa; }
+.result-stat-val.best-val { color: #34d399; }
 
 .result-stat-lbl {
   font-size: 0.82rem;
@@ -623,6 +724,16 @@ h1 {
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.05em;
+}
+
+.new-record {
+  color: #fbbf24;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  animation: pulseFire 1.5s infinite;
 }
 
 /* Incorrect Answers Review list */
@@ -704,20 +815,18 @@ h1 {
 
 /* Back button */
 .btn-back {
-  position: absolute;
-  top: 38px;
-  left: 40px;
   background: transparent;
   color: var(--text-secondary);
   border: none;
   cursor: pointer;
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
   transition: all 0.2s ease;
-  z-index: 10;
+  margin-bottom: 24px;
+  width: fit-content;
 }
 
 .btn-back:hover {
@@ -749,8 +858,7 @@ h1 {
   .subtitle { margin-bottom: 20px; }
   
   .btn-back {
-    top: 24px;
-    left: 20px;
+    margin-bottom: 16px;
   }
   
   .watermark {

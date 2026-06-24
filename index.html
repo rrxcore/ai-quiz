@@ -6,6 +6,9 @@
   <title>AI & Intelligent Agents Quiz Challenge</title>
   <meta name="description" content="An interactive quiz application for Artificial Intelligence concepts, search algorithms, logic, fuzzy reasoning, expert systems, and NLP.">
   
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+  
   <!-- Stylesheets -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -36,9 +39,13 @@
       <header class="quiz-header">
         <span id="category-badge" class="category-badge">Category</span>
         <div class="stats-container">
+          <div id="timer-container" class="timer-container">
+            ⏱ <span id="timer-display">0:00</span>
+          </div>
           <div id="streak-counter" class="streak-counter" style="display: none;">
             🔥 <span id="streak-val">0</span> Streak
           </div>
+          <button id="btn-sound" class="btn-sound" title="Toggle Sound">🔊</button>
           <span id="question-progress" class="question-progress">Q: 0/0</span>
         </div>
       </header>
@@ -83,6 +90,9 @@
 
       <!-- Footer navigation -->
       <footer class="quiz-nav">
+        <button id="btn-skip" class="btn btn-skip">
+          Skip ⏭
+        </button>
         <button id="btn-next" class="btn btn-primary" style="display: none;">
           Next Question ➔
         </button>
@@ -115,7 +125,7 @@
       </div>
 
       <!-- Performance Stats -->
-      <div class="results-stats">
+      <div class="results-stats four-col">
         <div class="result-stat-card">
           <div class="result-stat-val score-val" id="results-score-val">0/0</div>
           <div class="result-stat-lbl">Final Score</div>
@@ -123,6 +133,15 @@
         <div class="result-stat-card">
           <div class="result-stat-val streak-val" id="results-streak-val">0</div>
           <div class="result-stat-lbl">Max Streak</div>
+        </div>
+        <div class="result-stat-card">
+          <div class="result-stat-val time-val" id="results-time-val">0:00</div>
+          <div class="result-stat-lbl">Total Time</div>
+        </div>
+        <div class="result-stat-card">
+          <div class="result-stat-val best-val" id="results-best-val">—</div>
+          <div class="result-stat-lbl">Best Score</div>
+          <div id="new-record-badge" class="new-record" style="display: none;">🏆 New Record!</div>
         </div>
       </div>
 

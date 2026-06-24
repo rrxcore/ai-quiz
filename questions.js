@@ -267,7 +267,7 @@ const QUIZ_DATA = [
     "id": 45,
     "group": "Knowledge Representation and Logic",
     "question": "Convert into 1st-order predicate logic: \"Mary loves everyone\" (assuming the domain includes both humans and non-humans).",
-    "answer": "∀x (Human(x) → Loves(Mary, x))"
+    "answer": "∀x Loves(Mary, x)"
   },
   {
     "id": 46,
